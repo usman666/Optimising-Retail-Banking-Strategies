@@ -130,11 +130,17 @@ if show_top_customers:
     st.markdown("### 🏅 Top 10 High-Value Customers")
     top_customers = filtered_df.sort_values(by='Monetary', ascending=False).head(10)
     fig_top = px.bar(
-    top_customers,
-    x='CustomerID',
-    y='Monetary',
-    color='Segment',
-    hover_data=['Recency', 'Frequency', 'Cluster'],
-    title="Top 10 Customers by Monetary Value"
-)
-st.plotly_chart(fig_top, use_container_width=True)
+        top_customers,
+        x='CustomerID',
+        y='Monetary',
+        color='Segment',
+        hover_data=['Recency', 'Frequency', 'Cluster'],
+        title="Top 10 Customers by Monetary Value",
+        color_discrete_map={
+            'At-Risk Customers': 'lightblue',  # Light blue for At-Risk Customers
+            'Loyal Customers': '#1F77B4',    # Dark blue for Loyal Customers
+        
+        }
+    )
+    st.plotly_chart(fig_top, use_container_width=True)
+
