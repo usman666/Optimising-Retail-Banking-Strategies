@@ -144,3 +144,52 @@ if show_top_customers:
     )
     st.plotly_chart(fig_top, use_container_width=True)
 
+# === Segment Info Table ===
+if show_segment_table:
+    st.markdown("### 📘 Segment Description Table")
+    segment_info = pd.DataFrame({
+        "RFM Score Range": ["9–12", "6–8", "4–5", "1–3"],
+        "Segment Name": ["Best Customers", "Loyal Customers", "At Risk", "Lost Customers"],
+        "Description": [
+            "Recently active, frequent, high spenders",
+            "Good but less recent",
+            "Spending dropped, less frequent",
+            "Long gone, infrequent, low spending"
+        ]
+    })
+    st.markdown(" ")
+for i, row in segment_info.iterrows():
+    st.markdown(f"**{row['Segment Name']}** ({row['RFM Score Range']}): {row['Description']}")
+    
+    # === Cluster Profile Table ===
+st.markdown("### 🔍 Cluster Profiles")
+cluster_descriptions = {
+    0: "💰 High recency, Low frequent, Low Monetry – Lost Customers.",
+    1: "⏳ – Moderate recency,Customer transacted somewhat recently, Low Monetry. - At risk Customers" ,
+    2: "📉 Low Recency, customers transcated recently and Moderate Monetry– Loyal Customers.",
+    3: "⚠️ Moderate Recency, Customers transacted recently, High Monetry – High Value Customers who are infrequent but high spenders."
+}
+
+for c in sorted(df['Cluster'].unique()):
+    with st.expander(f"Cluster {c}"):
+        st.markdown(cluster_descriptions.get(c, "No description available."))
+        st.table(df[df['Cluster'] == c][['CustomerID', 'Recency', 'Frequency', 'Monetary', 'Segment']].head(10))
+
+# === RFM Matrix Table ===
+if show_rfm_matrix:
+    st.markdown("### 🧱 RFM Profile Table")
+    rfm_matrix = filtered_df.groupby('Cluster')[['Recency', 'Frequency', 'Monetary']].mean().round(1).reset_index()
+    fig_heat = go.Figure(data=go.Heatmap(
+    z=rfm_matrix[['Recency', 'Frequency', 'Monetary']].values,
+    x=['Recency', 'Frequency', 'Monetary'],
+    y=[f"Cluster {i}" for i in rfm_matrix['Cluster']],
+    colorscale='Blues',
+    showscale=True
+))
+fig_heat.update_layout(title='RFM Heatmap by Cluster')
+st.plotly_chart(fig_heat, use_container_width=True)
+
+
+# === Download Button ===
+st.markdown("### 💾 Export Data")
+st.download_button("📥 Download Filtered Data as CSV", data=filtered_df.to_csv(index=False), file_name="filtered_rfm.csv")
