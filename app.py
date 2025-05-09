@@ -3,6 +3,7 @@ import streamlit as st
 import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
+
 st.markdown(
     """
     <div style="display: flex; align-items: center; justify-content: center; margin-top: 20px;">
@@ -164,16 +165,16 @@ for i, row in segment_info.iterrows():
     # === Cluster Profile Table ===
 st.markdown("### 🔍 Cluster Profiles")
 cluster_descriptions = {
-    0: "💰 High recency, Low frequent, Low Monetry – Lost Customers.",
+    0: "⚠️ High recency, Low frequent, Low Monetry – Lost Customers.",
     1: "⏳ – Moderate recency,Customer transacted somewhat recently, Low Monetry. - At risk Customers" ,
     2: "📉 Low Recency, customers transcated recently and Moderate Monetry– Loyal Customers.",
-    3: "⚠️ Moderate Recency, Customers transacted recently, High Monetry – High Value Customers who are infrequent but high spenders."
+    3: "💰 Moderate Recency, Customers transacted recently, High Monetry – High Value Customers who are infrequent but high spenders."
 }
 
 for c in sorted(df['Cluster'].unique()):
     with st.expander(f"Cluster {c}"):
         st.markdown(cluster_descriptions.get(c, "No description available."))
-        st.table(df[df['Cluster'] == c][['CustomerID', 'Recency', 'Frequency', 'Monetary', 'Segment']].head(10))
+        st.table(df[df['Cluster'] == (c,)][['CustomerID', 'Recency', 'Frequency', 'Monetary', 'Segment']].head(10))
 
 # === RFM Matrix Table ===
 if show_rfm_matrix:
